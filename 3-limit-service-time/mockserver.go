@@ -22,7 +22,7 @@ func RunMockServer() {
 
 	wg.Add(5)
 
-	go createMockRequest(1, shortProcess, &u1)
+	go createMockRequest(1, longProcess, &u1)
 	time.Sleep(1 * time.Second)
 
 	go createMockRequest(2, longProcess, &u2)

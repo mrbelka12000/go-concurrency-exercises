@@ -11,8 +11,7 @@
 package main
 
 import (
-	"fmt"
-	"sync/atomic"
+	"sync"
 	"time"
 )
 
@@ -22,6 +21,7 @@ type User struct {
 	ID        int
 	IsPremium bool
 	TimeUsed  int64 // in seconds
+	mx        sync.Mutex
 }
 
 // HandleRequest runs the processes requested by users. Returns false
@@ -31,9 +31,9 @@ func HandleRequest(process func(), u *User) bool {
 
 	process()
 	d := time.Since(n).Seconds()
-
-	atomic.AddInt64(&u.TimeUsed, int64(d))
-	fmt.Println(u)
+	u.mx.Lock()
+	defer u.mx.Unlock()
+	u.TimeUsed += int64(d)
 	if !u.IsPremium && u.TimeUsed > 10 {
 		return false
 	}
